@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employee Time Calculator</title>
+</head>
+<body>
+  <h1>Employee Time Calculator</h1>
+  <label for="overtime">Overtime (in minutes):</label>
+  <input type="number" id="overtime" name="overtime" min="0" required>
+  <br>
+  <label for="in_time">In-Time (HH:MM):</label>
+  <input type="text" id="in_time" name="in_time" required>
+  <br>
+  <button onclick="calculateTime()">Submit</button>
+  
+  <h2>Results:</h2>
+  <p id="result"></p>
+
+  <script>
+    async function calculateTime() {
+      const overtime = document.getElementById("overtime").value;
+      const inTime = document.getElementById("in_time").value;
+      const resultElement = document.getElementById("result");
+
+      if (overtime && inTime) {
+        try {
+          const response = await fetch(`/.netlify/functions/employee_time?overtime=${overtime}&in_time=${inTime}`);
+          const data = await response.json();
+          if (response.ok) {
+            resultElement.textContent = `In-Time: ${data.in_time}, Out-Time: ${data.out_time}`;
+          } else {
+            resultElement.textContent = data.message;
+          }
+        } catch (error) {
+          resultElement.textContent = "Error fetching data.";
+        }
+      }
+    }
+  </script>
+</body>
+</html>
+
