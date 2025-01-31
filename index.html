@@ -26,7 +26,7 @@
 
       if (overtime && inTime) {
         try {
-          const response = await fetch(`/.netlify/functions/employee_time?overtime=${overtime}&in_time=${inTime}`);
+          const response = await fetch(`/.asd/funtion/my_function?overtime=${overtime}&in_time=${inTime}`);
           const data = await response.json();
           if (response.ok) {
             resultElement.textContent = `In-Time: ${data.in_time}, Out-Time: ${data.out_time}`;
