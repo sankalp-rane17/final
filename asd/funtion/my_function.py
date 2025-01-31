@@ -1,9 +1,8 @@
-import random
+import json
 from datetime import datetime, timedelta
 
-def generate_employee_time(overtime_minutes,userinput):
-    userinput+=" AM"
-
+def generate_employee_time(overtime_minutes, userinput):
+    userinput += " AM"
 
     duty_start = datetime.strptime(userinput, "%I:%M %p")
 
@@ -22,27 +21,25 @@ def generate_employee_time(overtime_minutes,userinput):
     return in_time.strftime("%I:%M %p"), out_time.strftime("%I:%M %p")
 
 def handler(event, context):
-    return {
-        "statusCode": 200,
-        "body": "Hello, world!"
-    }
-
-def main():
-    print("Enter the overtime in minutes:")
+    # Get data from the event (query parameters or request body)
     try:
-        overtime_minutes = int(input("Overtime (in minutes): "))
-        userinput=input("IN TIME :")
+        overtime_minutes = int(event['queryStringParameters']['overtime'])
+        userinput = event['queryStringParameters']['in_time']
+
         if overtime_minutes < 0:
-            print("Overtime cannot be negative. Please enter a valid number.")
-            return
+            return {
+                "statusCode": 400,
+                "body": json.dumps({"message": "Overtime cannot be negative"})
+            }
 
-        in_time, out_time = generate_employee_time(overtime_minutes,userinput)
-        print(f"Employee In-Time: {in_time}")
-        print(f"Employee Out-Time: {out_time}")
+        in_time, out_time = generate_employee_time(overtime_minutes, userinput)
 
+        return {
+            "statusCode": 200,
+            "body": json.dumps({"in_time": in_time, "out_time": out_time})
+        }
     except ValueError:
-        print("Invalid input. Please enter a valid number for overtime.")
-
-
-if __name__ == "__main__":
-    main()
+        return {
+            "statusCode": 400,
+            "body": json.dumps({"message": "Invalid input"})
+        }
